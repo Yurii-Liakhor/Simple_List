@@ -1,0 +1,14 @@
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+libs/
+src/main/java/com/simplelist/libs/
+src/main/res/drawable/acrtionbar/
+src/main/res/drawable/actionBar/
+src/main/res/layout -land/

@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">SimpleList</string>
+
+    <string name="empty_item_list">No Items</string>
+    <string name="empty_backup_list">No Backups</string>
+    <string name="item_title">Title:</string>
+    <string name="item_description">Description:</string>
+    <string name="item_image">Get Photo</string>
+    <string name="action_delete">Delete</string>
+    <string name="charters_left">Characters left:</string>
+    <string name="delete_image">Delete Image</string>
+
+    <string name="action_sort">Sort</string>
+    <string name="alphabet_sort">by alphabet</string>
+    <string name="date_sort">by created time</string>
+
+    <string name="action_backup">Backups</string>
+    <string name="add_backup">Add Backup</string>
+    
+    <string name="back_button_alert_message">Do you want to save changes?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+</resources>
