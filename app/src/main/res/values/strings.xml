@@ -7,6 +7,7 @@
     <string name="item_description">Description:</string>
     <string name="item_image">Get Photo</string>
     <string name="action_delete">Delete</string>
+    <string name="action_color">Color</string>
     <string name="charters_left">Characters left:</string>
     <string name="delete_image">Delete Image</string>
 
@@ -16,7 +17,9 @@
 
     <string name="action_backup">Backups</string>
     <string name="add_backup">Add Backup</string>
-    
+
+    <string name="delete_button_alert_message">Do you want to delete item?</string>
+
     <string name="back_button_alert_message">Do you want to save changes?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>

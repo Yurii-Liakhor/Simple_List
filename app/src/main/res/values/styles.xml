@@ -18,6 +18,70 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="AppBarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@android:color/black</item>
+    </style>
+
+    <style name="ColorsDialog" parent="android:Theme.Dialog">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="OverlayPrimaryColorRed">
+        <item name="colorPrimary">@color/colorLightRed</item>
+        <item name="colorPrimaryDark">@color/colorRed</item>
+    </style>
+
+    <style name="OverlayPrimaryColorOrange">
+        <item name="colorPrimary">@color/colorLightOrange</item>
+        <item name="colorPrimaryDark">@color/colorOrange</item>
+    </style>
+
+    <style name="OverlayPrimaryColorYellow">
+        <item name="colorPrimary">@color/colorLightYellow</item>
+        <item name="colorPrimaryDark">@color/colorYellow</item>
+    </style>
+
+    <style name="OverlayPrimaryColorGreen">
+        <item name="colorPrimary">@color/colorLightGreen</item>
+        <item name="colorPrimaryDark">@color/colorGreen</item>
+    </style>
+
+    <style name="OverlayPrimaryColorBlue">
+        <item name="colorPrimary">@color/colorLightBlue</item>
+        <item name="colorPrimaryDark">@color/colorBlue</item>
+    </style>
+
+    <style name="OverlayPrimaryColorPurple">
+        <item name="colorPrimary">@color/colorLightPurple</item>
+        <item name="colorPrimaryDark">@color/colorPurple</item>
+    </style>
+
+    <style name="OverlayPrimaryColorBlack">
+        <item name="colorPrimary">@color/colorLightBlack</item>
+        <item name="colorPrimaryDark">@color/colorBlack</item>
+    </style>
+
+    <style name="OverlayPrimaryColorBrown">
+        <item name="colorPrimary">@color/colorLightBrown</item>
+        <item name="colorPrimaryDark">@color/colorBrown</item>
+    </style>
+
+    <style name="OverlayPrimaryColorGrey">
+        <item name="colorPrimary">@color/colorLightGrey</item>
+        <item name="colorPrimaryDark">@color/colorGrey</item>
+    </style>
+<!--
+    <style name="OverlayPrimaryColorGreen">
+        <item name="colorPrimary">@color/md_green_500</item>
+        <item name="colorPrimaryDark">@color/md_green_700</item>
+    </style>
+
+    <style name="OverlayPrimaryColorBlue">
+        <item name="colorPrimary">@color/md_blue_500</item>
+        <item name="colorPrimaryDark">@color/md_blue_700</item>
+    </style>
+-->
 </resources>
 
 <!--Theme.AppCompat.Light.DarkActionBar

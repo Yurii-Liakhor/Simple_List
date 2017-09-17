@@ -83,12 +83,23 @@ public class BackupActivity extends AppCompatActivity {
         backupList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         backupList.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
-            public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) { }
+            public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
+                actionMode.setTitle(R.string.action_backup);
+                int count = backupList.getCheckedItemCount();
+                if(count == 0)
+                    actionMode.setSubtitle("No backups selected");
+                else if(count == 1)
+                    actionMode.setSubtitle("1 backup selected");
+                else
+                    actionMode.setSubtitle(count + " backups selected");
+            }
 
             @Override
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 MenuInflater inflater = actionMode.getMenuInflater();
                 inflater.inflate(R.menu.edit_menu, menu);
+                MenuItem item = menu.findItem(R.id.action_color);
+                item.setVisible(false);
                 return true;
             }
 

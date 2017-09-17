@@ -1,8 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--<color name="colorPrimary">#3F51B5</color>-->
+    <!--<color name="colorPrimary">#3F51B5</color>#558B2F-->
     <color name="colorPrimary">#558B2F</color>
     <!--<color name="colorPrimaryDark">#303F9F</color>-->
     <color name="colorPrimaryDark">#33691E</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="colorLightRed">#EF5350</color>
+    <color name="colorRed">#C62828</color>
+    <color name="colorLightOrange">#FFA726</color>
+    <color name="colorOrange">#EF6C00</color>
+    <color name="colorLightYellow">#FDD835</color>
+    <color name="colorYellow">#F9A825</color>
+    <color name="colorLightGreen">#43A047</color>
+    <color name="colorGreen">#2E7D32</color>
+    <color name="colorLightBlue">#448AFF</color>
+    <color name="colorBlue">#1565C0</color>
+    <color name="colorLightPurple">#673AB7</color>
+    <color name="colorPurple">#4527A0</color>
+    <color name="colorLightBlack">#424242</color>
+    <color name="colorBlack">#212121</color>
+    <color name="colorLightBrown">#6D4C41</color>
+    <color name="colorBrown">#4E342E</color>
+    <color name="colorLightGrey">#9E9E9E</color>
+    <color name="colorGrey">#757575</color>
+
+    <array name="color_palette">
+        <item>@color/colorRed</item>
+        <item>@color/colorOrange</item>
+        <item>@color/colorYellow</item>
+        <item>@color/colorGreen</item>
+        <item>@color/colorBlue</item>
+        <item>@color/colorPurple</item>
+        <item>@color/colorBlack</item>
+        <item>@color/colorBrown</item>
+        <item>@color/colorGrey</item>
+    </array>
+
 </resources>

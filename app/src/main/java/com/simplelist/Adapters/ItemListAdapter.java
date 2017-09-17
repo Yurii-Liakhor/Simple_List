@@ -14,12 +14,16 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.PictureDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v4.util.LruCache;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.net.Uri;
 
@@ -35,10 +40,17 @@ import com.simplelist.R;
 import com.simplelist.RoundedAvatarDrawable;
 import com.simplelist.Views.CustomImageView;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -50,12 +62,15 @@ import butterknife.ButterKnife;
 
 public class ItemListAdapter extends ArrayAdapter<Item> {
     private Context context;
+    private ArrayList<Integer> colors;
 
     static class ViewHolder {
         TextView title;
         TextView description;
         CustomImageView image;
+
         String imageStr;
+        int color;
     }
 
     public ItemListAdapter(Context context, ArrayList<Item> items) {
@@ -68,7 +83,6 @@ public class ItemListAdapter extends ArrayAdapter<Item> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         Item item = getItem(position);
-
         ViewHolder viewHolder = null;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
@@ -86,7 +100,19 @@ public class ItemListAdapter extends ArrayAdapter<Item> {
         String title = item.getTitle();
         String description = item.getDescription();
         String image = item.getImage();
+        int color = item.getColor();
         //String uuid = item.getUuid();
+
+        //if(title != null && description != null)
+
+        int[] colorsArr = context.getResources().getIntArray(R.array.color_palette);
+        colors = new ArrayList<Integer>(colorsArr.length);
+        for(int i : colorsArr) colors.add(i);
+
+        if(((ListView)parent).isItemChecked(position))
+            convertView.setBackgroundResource(R.drawable.background_activated);
+        else
+            convertView.setBackgroundColor(adjustAlpha(colors.get(color), 0.4f));
 
         int titleLength;
         int descLength;
@@ -98,43 +124,48 @@ public class ItemListAdapter extends ArrayAdapter<Item> {
             titleLength = 70;
             descLength = 40;
         }
-        if (description.length() > descLength) {
+        if (description != null && description.length() > descLength) {
             description = description.substring(0, descLength);
             description = description + "...";
         }
-        if (title.length() > titleLength) {
+        if (title != null && title.length() > titleLength) {
             title = title.substring(0, titleLength);
             title = title + "...";
         }
         viewHolder.title.setText(title);
         viewHolder.description.setText(description);
         viewHolder.imageStr = image;
+        viewHolder.color = color;
         new LoadImageTask().execute(viewHolder); //image load Task
 
         return convertView;
     }
 
-
-
-    public class LoadImageTask extends AsyncTask<ViewHolder, Void, ViewHolder>{
-
+    private class LoadImageTask extends AsyncTask<ViewHolder, Void, ViewHolder>{
         private RoundedAvatarDrawable bitmap;
 
         @Override
         protected ViewHolder doInBackground(ViewHolder... params) {
             ViewHolder viewHolder = params[0];
             String image = viewHolder.imageStr;
+            int color = viewHolder.color;
             if (image != null && !image.equals("")) {
                 File imgFile = new File(image);
                 if (imgFile.exists()) {
-                    bitmap = new RoundedAvatarDrawable(scaleCenterCrop(decodeSampledBitmapFromPath(imgFile, 70, 70)));
+                    File cacheFile = readImageFromCache(imgFile);
+                    if(cacheFile != null)
+                        bitmap = new RoundedAvatarDrawable(decodeSampledBitmapFromPath(cacheFile, 70, 70));
+                    else {
+                        bitmap = new RoundedAvatarDrawable(scaleCenterCrop(decodeSampledBitmapFromPath(imgFile, 70, 70)));
+                        writeImageToCache(bitmap, imgFile);
+                    }
                 } else {
                     bitmap = new RoundedAvatarDrawable(Bitmap.createBitmap(70, 70, Bitmap.Config.RGB_565));
-                    bitmap.setColorFilter(Color.parseColor("#98c639"), PorterDuff.Mode.ADD);
+                    bitmap.setColorFilter(colors.get(color), PorterDuff.Mode.ADD);
                 }
             } else {
                 bitmap = new RoundedAvatarDrawable(Bitmap.createBitmap(70, 70, Bitmap.Config.RGB_565));
-                bitmap.setColorFilter(Color.parseColor("#98c639"), PorterDuff.Mode.ADD);
+                bitmap.setColorFilter(colors.get(color), PorterDuff.Mode.ADD);
                 //bitmap.eraseColor(Color.parseColor("#98c639"));
             }
             return viewHolder;
@@ -146,7 +177,43 @@ public class ItemListAdapter extends ArrayAdapter<Item> {
         }
     }
 
-    public Bitmap decodeSampledBitmapFromPath(File imgFile, int reqWidth, int reqHeight) {
+    private void writeImageToCache(RoundedAvatarDrawable rad, File file){
+
+        String filename = file.getName();
+        //String filename = SystemClock.currentThreadTimeMillis() + ".png";
+        //File file = new File(context.getCacheDir(), filename);
+        File dir = context.getCacheDir();
+        String filepath = dir.getAbsolutePath() + "/" + filename;
+
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(filepath);
+            rad.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+            // PNG is a lossless format, the compression factor (100) is ignored
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private File readImageFromCache(File file){
+        File path = context.getCacheDir();
+        //File[] files = path.listFiles();
+        File cacheFile = new File(path.getAbsolutePath() + "/" + file.getName());
+        if(cacheFile.exists()){
+            return cacheFile;
+        }
+        return null;
+    }
+
+    private Bitmap decodeSampledBitmapFromPath(File imgFile, int reqWidth, int reqHeight) {
         try {
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
@@ -162,7 +229,7 @@ public class ItemListAdapter extends ArrayAdapter<Item> {
         }
     }
 
-    public Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
+    private Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeResource(res, resId, options);
@@ -171,7 +238,7 @@ public class ItemListAdapter extends ArrayAdapter<Item> {
         return BitmapFactory.decodeResource(res, resId, options);
     }
 
-    public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         final int height = options.outHeight;
         final int width = options.outWidth;
         int inSampleSize = 1;
@@ -184,7 +251,7 @@ public class ItemListAdapter extends ArrayAdapter<Item> {
         return inSampleSize;
     }
 
-    public Bitmap scaleCenterCrop(Bitmap bitmap) {
+    private Bitmap scaleCenterCrop(Bitmap bitmap) {
         int sourceWidth = bitmap.getWidth();
         int sourceHeight = bitmap.getHeight();
 
@@ -199,6 +266,14 @@ public class ItemListAdapter extends ArrayAdapter<Item> {
             return Bitmap.createBitmap(bitmap, x, 0, sourceHeight, sourceHeight);
         }
         return bitmap;
+    }
+
+    private int adjustAlpha(int color, float factor) {
+        int alpha = Math.round(Color.alpha(color) * factor);
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        return Color.argb(alpha, red, green, blue);
     }
 }
 

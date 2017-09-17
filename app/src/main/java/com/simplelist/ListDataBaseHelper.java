@@ -18,13 +18,14 @@ import java.util.ArrayList;
 public class ListDataBaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "list.sqlite";
-    private static final int VERSION = 4;
+    private static final int VERSION = 5;
     private static final String TABLE_LIST = "list";
     private static final String COLUMN_LIST_ID = "_id";
     private static final String COLUMN_LIST_ITEM_NAME = "item_name";
     private static final String COLUMN_LIST_ITEM_DESCRIPTION = "item_description";
     private static final String COLUMN_LIST_ITEM_DATE = "item_date";
     private static final String COLUMN_LIST_ITEM_IMAGE = "item_image";
+    private static final String COLUMN_LIST_ITEM_COLOR = "item_color";
 
     private static final String SORT_BY_ASC = COLUMN_LIST_ITEM_NAME + " " + "ASC";
     private static final String SORT_BY_DESC = COLUMN_LIST_ITEM_NAME + " " + "DESC";
@@ -38,14 +39,14 @@ public class ListDataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE list " +
-                "(_id, item_name, item_description, item_date DATETIME, item_image);");
+                "(_id, item_name, item_description, item_date DATETIME, item_image, item_color integer default 3);");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        if(i != 4){
-            db.execSQL("ALTER TABLE " + TABLE_LIST + " ADD COLUMN " + COLUMN_LIST_ITEM_IMAGE);
-            db.execSQL("UPDATE " + TABLE_LIST + " SET " + COLUMN_LIST_ITEM_IMAGE + " = '';");
+        if(i != 5){
+            //db.execSQL("ALTER TABLE " + TABLE_LIST + " ADD COLUMN " + COLUMN_LIST_ITEM_COLOR);
+            //db.execSQL("UPDATE " + TABLE_LIST + " SET " + COLUMN_LIST_ITEM_COLOR + " = '4';");
             //onCreate(db);
         }
     }
@@ -57,6 +58,7 @@ public class ListDataBaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_LIST_ITEM_DESCRIPTION, item.getDescription());
         cv.put(COLUMN_LIST_ITEM_IMAGE, item.getImage());
         cv.put(COLUMN_LIST_ITEM_DATE, item.getTimestamp().toString());
+        cv.put(COLUMN_LIST_ITEM_COLOR, item.getColor());
         getWritableDatabase().insert(TABLE_LIST, null, cv);
     }
 
@@ -68,6 +70,7 @@ public class ListDataBaseHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_LIST_ITEM_DESCRIPTION, items.get(i).getDescription());
             cv.put(COLUMN_LIST_ITEM_IMAGE, items.get(i).getImage());
             cv.put(COLUMN_LIST_ITEM_DATE, items.get(i).getTimestamp().toString());
+            cv.put(COLUMN_LIST_ITEM_COLOR, items.get(i).getColor());
             getWritableDatabase().insert(TABLE_LIST, null, cv);
         }
     }
@@ -77,6 +80,7 @@ public class ListDataBaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_LIST_ITEM_NAME, item.getTitle());
         cv.put(COLUMN_LIST_ITEM_DESCRIPTION, item.getDescription());
         cv.put(COLUMN_LIST_ITEM_IMAGE, item.getImage());
+        cv.put(COLUMN_LIST_ITEM_COLOR, item.getColor());
         //getWritableDatabase().update(TABLE_LIST, cv, "_id" + "=" + item.getId(), null);
         getWritableDatabase().update(TABLE_LIST, cv, "_id" + "=?", new String[] {item.getUuid()});
     }
@@ -96,7 +100,7 @@ public class ListDataBaseHelper extends SQLiteOpenHelper {
                 null, null, null, null, null);
         if (cursor.moveToFirst()){
             do{
-                Item item = new Item(cursor.getString(0), cursor.getString(1), cursor.getString(2), Timestamp.valueOf(cursor.getString(3)), cursor.getString(4));
+                Item item = new Item(cursor.getString(0), cursor.getString(1), cursor.getString(2), Timestamp.valueOf(cursor.getString(3)), cursor.getString(4), cursor.getInt(5));
                 list.add(item);
             } while(cursor.moveToNext());
         }
@@ -109,7 +113,7 @@ public class ListDataBaseHelper extends SQLiteOpenHelper {
                 null, null, null, null, Sort);
         if (cursor.moveToFirst()){
             do{
-                Item item = new Item(cursor.getString(0), cursor.getString(1), cursor.getString(2), Timestamp.valueOf(cursor.getString(3)), cursor.getString(4));
+                Item item = new Item(cursor.getString(0), cursor.getString(1), cursor.getString(2), Timestamp.valueOf(cursor.getString(3)), cursor.getString(4), cursor.getInt(5));
                 list.add(item);
             } while(cursor.moveToNext());
         }

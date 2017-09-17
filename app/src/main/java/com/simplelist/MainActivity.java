@@ -41,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String STATE_NAMES = "NAMES";
 
     private static final String EXTRA_ITEM = "com.simplelist.item";
-    //private static final String EXTRA_ITEMS = "com.simplelist.items";
-    //private static final String EXTRA_DATABASE = "com.simplelist.database";
     private static final String EXTRA_NUMB = "com.simplelist.item_numb";
     private static final int EDIT_REQUEST = 1;
     private static final int ADD_REQUEST = 2;
@@ -117,15 +115,29 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, EDIT_REQUEST);
             }
         });
+
+
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
-            public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {}
+            public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
+                actionMode.setTitle(R.string.app_name);
+                int count = listView.getCheckedItemCount();
+                if(count == 0)
+                    actionMode.setSubtitle("No items selected");
+                else if(count == 1)
+                    actionMode.setSubtitle("1 item selected");
+                else
+                    actionMode.setSubtitle(count + " items selected");
+                listAdapter.notifyDataSetChanged();
+            }
 
             @Override
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 MenuInflater inflater = actionMode.getMenuInflater();
                 inflater.inflate(R.menu.edit_menu, menu);
+                MenuItem item = menu.findItem(R.id.action_color);
+                item.setVisible(false);
                 return true;
             }
 

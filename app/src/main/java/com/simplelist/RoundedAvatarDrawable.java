@@ -35,6 +35,10 @@ public class RoundedAvatarDrawable extends Drawable {
         mBitmapHeight = mBitmap.getHeight();
     }
 
+    public Bitmap getmBitmap() {
+        return mBitmap;
+    }
+
     @Override
     public void draw(Canvas canvas) {
         canvas.drawOval(mRectF, mPaint);
